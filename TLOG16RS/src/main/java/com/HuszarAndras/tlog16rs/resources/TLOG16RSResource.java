@@ -1,6 +1,7 @@
 
 package com.HuszarAndras.tlog16rs.resources;
 
+import com.HuszarAndras.tlog16rs.entities.TestEntity;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.FutureWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.InvalidTaskIdException;
@@ -24,6 +25,7 @@ import com.HuszarAndras.tlog16rs.core.tlog16java.WorkDay;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkDayRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkMonth;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkMonthRB;
+import com.avaje.ebean.Ebean;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -236,5 +238,16 @@ public class TLOG16RSResource {
     @Path("/workmonths/deleteall")
     public void deleteAll(){
         timeLogger.deleteMonths();
+    }
+    
+    @POST
+    @Path("/timelogger/save/test")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String testSave(String text){
+        TestEntity testEntity = new TestEntity();
+        testEntity.setText(text);
+        Ebean.save(testEntity);
+        return text;
     }
 }
