@@ -5,6 +5,7 @@
  */
 package com.HuszarAndras.tlog16rs.core.tlog16java;
 
+import com.HuszarAndras.tlog16rs.TLOG16RSConfiguration;
 import com.HuszarAndras.tlog16rs.entities.TestEntity;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -34,24 +35,18 @@ public class CreateDatabase {
     private ServerConfig serverConfig;
     private EbeanServer ebeanServer;
     
-    public CreateDatabase() throws LiquibaseException, FileNotFoundException, IOException{
-        FileInputStream propFile =
-            new FileInputStream("C:/Users/andris/Documents/NetBeansProjects/TLOG16RS/myProperties.txt");
-        Properties p =
-            new Properties(System.getProperties());
-        p.load(propFile);
-
-        System.setProperties(p);
+    public CreateDatabase(TLOG16RSConfiguration config) throws LiquibaseException, FileNotFoundException, IOException{
         
         serverConfig = new ServerConfig();
-        serverConfig.setName(System.getProperty("database.serverconfig"));
+        serverConfig.setName(config.getServerconfig());
         
         dataSourceConfig = new DataSourceConfig();
-        dataSourceConfig.setDriver(System.getProperty("database.driver"));
-        dataSourceConfig.setUrl(System.getProperty("database.url"));
-        dataSourceConfig.setUsername(System.getProperty("database.username"));
-        dataSourceConfig.setPassword(System.getProperty("database.password"));
+        dataSourceConfig.setDriver(config.getDriver());
+        dataSourceConfig.setUrl(config.getUrl());
+        dataSourceConfig.setUsername(config.getUsername());     
+        dataSourceConfig.setPassword(config.getPassword());
         
+         
         //serverConfig.setDdlGenerate(true);
         //serverConfig.setDdlRun(true); 
         serverConfig.setDdlGenerate(false);
@@ -73,7 +68,6 @@ public class CreateDatabase {
         Liquibase liquibase = null;
         
         try{
-           System.out.println("itt vagyok");
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(c));
         liquibase = new Liquibase("C:/Users/andris/Documents/NetBeansProjects/TLOG16RS/src/main/resources/migration.xml", new FileSystemResourceAccessor(), database);
         liquibase.update("");

@@ -38,7 +38,7 @@ dependencies {
 }
 
 run {
- args 'server'
+ args 'server', 'src/dist/config.yml'
  systemProperties = System.properties
 }
 

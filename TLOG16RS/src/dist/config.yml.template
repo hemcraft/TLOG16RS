@@ -1,0 +1,3 @@
+dbUrl: {{ .Env.DB_URL }}
+dbUsername: {{ .Env.DB_USERNAME }}
+dbPassword: {{ .Env.DB_PASSWORD }}

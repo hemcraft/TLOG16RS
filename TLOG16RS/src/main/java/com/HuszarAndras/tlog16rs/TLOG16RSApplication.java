@@ -33,7 +33,7 @@ public class TLOG16RSApplication extends Application<TLOG16RSConfiguration> {
     public void run(final TLOG16RSConfiguration configuration,
                     final Environment environment) throws LiquibaseException, IOException {
         environment.jersey().register(new TLOG16RSResource());
-        CreateDatabase createDatabase = new CreateDatabase();
+        CreateDatabase createDatabase = new CreateDatabase(configuration);
     }
 
 }
