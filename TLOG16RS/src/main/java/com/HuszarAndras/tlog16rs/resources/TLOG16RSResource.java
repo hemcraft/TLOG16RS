@@ -64,6 +64,8 @@ public class TLOG16RSResource {
     public WorkMonth addNewWorkMonth(WorkMonthRB month) throws NotNewMonthException{
         WorkMonth workMonth = new WorkMonth(month.getYear(), month.getMonth());
         timeLogger.addMonth(workMonth);
+        Ebean.save(timeLogger);
+        
         return workMonth;
     }
     

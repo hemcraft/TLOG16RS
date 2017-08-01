@@ -15,6 +15,11 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldExcept
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewDateException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotTheSameMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledException;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,18 +30,24 @@ import lombok.extern.slf4j.Slf4j;
 @lombok.Getter
 @lombok.Setter
 @Slf4j
+@Entity
 public class WorkMonth {
+    private int id;
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private ArrayList<WorkDay> days;
-    private YearMonth date;
+    private transient YearMonth date;
+    private String newDate;
     private long sumPerMonth;
     private long requiredMinPerMonth;
     
     public WorkMonth(int year, int month){
+        id++;
         this.date = YearMonth.of(year, month);
         days = new ArrayList<WorkDay>();
     }
     
     public WorkMonth(int year, Month month){
+        id++;
         this.date = YearMonth.of(year, month);
         days = new ArrayList<WorkDay>();
     }

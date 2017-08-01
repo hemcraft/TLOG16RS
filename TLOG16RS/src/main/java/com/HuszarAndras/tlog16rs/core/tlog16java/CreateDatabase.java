@@ -47,10 +47,10 @@ public class CreateDatabase {
         dataSourceConfig.setPassword(config.getPassword());
         
          
-        //serverConfig.setDdlGenerate(true);
-        //serverConfig.setDdlRun(true); 
-        serverConfig.setDdlGenerate(false);
-        serverConfig.setDdlRun(false); 
+        serverConfig.setDdlGenerate(true);
+        serverConfig.setDdlRun(true); 
+        //serverConfig.setDdlGenerate(false);
+        //serverConfig.setDdlRun(false); 
         serverConfig.setRegister(true);
         serverConfig.setDataSourceConfig(dataSourceConfig);
         serverConfig.addClass(TestEntity.class); 

@@ -11,6 +11,8 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.InvalidTaskIdExcepti
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NoTaskIdException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import static com.HuszarAndras.tlog16rs.core.tlog16java.Util.roundToMultipleQuarterHour;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.Entity;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,13 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 @lombok.Getter
 @lombok.Setter
 @Slf4j
+@Entity
 public class Task {
+    private int id;
     private String taskId;
     private LocalTime startTime;
     private LocalTime endTime;
     private String comment;
     
     public Task(String taskId, int startHour, int startMin, int endHour, int endMin, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
+        id++;
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -49,6 +54,7 @@ public class Task {
     }
     
     public Task(String taskId, String startTime, String endTime, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
+        id++;
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -71,6 +77,7 @@ public class Task {
     }
     
     public Task(String taskId) throws InvalidTaskIdException, NoTaskIdException{
+        id++;
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -83,6 +90,7 @@ public class Task {
     }
 
     public Task(String taskId, String startTime, String endTime) {
+        id++;
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
         

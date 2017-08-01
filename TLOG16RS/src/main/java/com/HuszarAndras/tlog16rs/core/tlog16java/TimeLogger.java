@@ -18,6 +18,11 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NoTaskIdException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,10 +30,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author Andris
  */
 @Slf4j
+@Entity
 public class TimeLogger {
+    private int id;
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private ArrayList<WorkMonth> months;
     
     public TimeLogger() {
+        id++;
         months = new ArrayList<WorkMonth>();
     }
     

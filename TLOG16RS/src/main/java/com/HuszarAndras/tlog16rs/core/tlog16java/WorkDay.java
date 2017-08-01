@@ -15,6 +15,11 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.FutureWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NegativeMinutesOfWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
 import static com.HuszarAndras.tlog16rs.core.tlog16java.Util.isSeparatedTime;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,13 +30,17 @@ import lombok.extern.slf4j.Slf4j;
 @lombok.Getter
 @lombok.Setter
 @Slf4j
+@Entity
 public class WorkDay {
+    private int id;
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private ArrayList<Task> tasks;
     private long requiredMinPerDay = 450;
     private LocalDate actualDay = LocalDate.now();
     private long sumPerDay;
     
     public WorkDay(long requiredMinPerDay, LocalDate actualDay) throws NegativeMinutesOfWorkException, FutureWorkException{
+        id++;
         if(requiredMinPerDay < 0){
             log.error("requiredMinPerDay cannot be less then zero");
             throw new NegativeMinutesOfWorkException("can't be negative");
@@ -46,6 +55,7 @@ public class WorkDay {
     }
     
     public WorkDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException{
+        id++;
         if(requiredMinPerDay < 0){
             log.error("requiredMinPerDay cannot be less then zero");
             throw new NegativeMinutesOfWorkException("can't be negative");
@@ -56,6 +66,7 @@ public class WorkDay {
     }
     
     public WorkDay(){
+        id++;
         this.requiredMinPerDay = 450;
         this.actualDay = LocalDate.now();
         tasks = new ArrayList<Task>();
