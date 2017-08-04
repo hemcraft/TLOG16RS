@@ -25,6 +25,10 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
+import com.HuszarAndras.tlog16rs.entities.TimeLogger;
+import com.HuszarAndras.tlog16rs.entities.WorkDay;
+import com.HuszarAndras.tlog16rs.entities.WorkMonth;
+import com.HuszarAndras.tlog16rs.entities.Task;
 
 /**
  *
@@ -47,13 +51,16 @@ public class CreateDatabase {
         dataSourceConfig.setPassword(config.getPassword());
         
          
-        serverConfig.setDdlGenerate(true);
-        serverConfig.setDdlRun(true); 
-        //serverConfig.setDdlGenerate(false);
-        //serverConfig.setDdlRun(false); 
+        //serverConfig.setDdlGenerate(true);
+        //serverConfig.setDdlRun(true); 
+        serverConfig.setDdlGenerate(false);
+        serverConfig.setDdlRun(false); 
         serverConfig.setRegister(true);
         serverConfig.setDataSourceConfig(dataSourceConfig);
-        serverConfig.addClass(TestEntity.class); 
+        serverConfig.addClass(TimeLogger.class); 
+        serverConfig.addClass(WorkMonth.class); 
+        serverConfig.addClass(WorkDay.class); 
+        serverConfig.addClass(Task.class); 
         serverConfig.setDefaultServer(true);
         
         ebeanServer = EbeanServerFactory.create(serverConfig);

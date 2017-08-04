@@ -20,6 +20,10 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewMonthException
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotTheSameMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledException;
+import com.HuszarAndras.tlog16rs.entities.TimeLogger;
+import com.HuszarAndras.tlog16rs.entities.WorkDay;
+import com.HuszarAndras.tlog16rs.entities.WorkMonth;
+import com.HuszarAndras.tlog16rs.entities.Task;
 
 /**
  *

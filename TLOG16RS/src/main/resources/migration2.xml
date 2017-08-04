@@ -1,47 +1,81 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<changeSet id="1" author="ahuszar"> 
-		<createTable tableName="time_logger">
-            <column name="id" type="INTEGER">
-				
-			</column>
-        </createTable>
-	</changeSet>
-	<changeSet id="2" author="ahuszar"> 
+<!--<changeSet id="2" author="ahuszar"> 
 		<createTable tableName="work_month">
             <column name="id" type="INTEGER" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="time_logger_id" type="INTEGER"/>
+			<column name="time_logger_id" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
 			<column name="sum_per_month" type="INTEGER"/>
-			<column name="required:min_per_month" type="INTEGER"/>
-			<column name="extra_min_per_month" type="INTEGER"/>
-			<!--<column name="date" type="date"/>-->
+			<column name="required_min_per_month" type="INTEGER"/>
+			<column name="extra_min_per_month" type="INTEGER"/>	
+			<column name="new_date" type="VARCHAR(255)"/>
         </createTable>
-	</changeSet>
-	<changeSet id="3" author="ahuszar"> 
+	</changeSet>-->
+	
+	<!--<changeSet id="3" author="ahuszar"> 
 		<createTable tableName="work_day">
             <column name="id" type="INTEGER" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="work_month_id" type="INTEGER"/>
-			<column name="required:min_per_day" type="INTEGER"/>
+			<column name="work_month_id" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+			<column name="required_min_per_day" type="INTEGER"/>
 			<column name="extra_min_per_day" type="INTEGER"/>
-			<!--<column name="actual_day" type="LocalDate"/>-->
+			<column name="actual_day" type="DATE"/>
 			<column name="sum_per_day" type="INTEGER"/>
         </createTable>
-	</changeSet>
-	<changeSet id="4" author="ahuszar"> 
+	</changeSet>-->
+	
+	<!--<changeSet id="4" author="ahuszar"> 
 		<createTable tableName="task">
             <column name="id" type="INTEGER" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="work_day_id" type="INTEGER"/>
+			<column name="work_day_id" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
 			<column name="task_id" type="INTEGER"/>
-			<!--<column name="start_time" type="LocalTime"/>
-			<column name="end_time" type="LocalTime"/>-->
-			<column name="comment" type=""varchar(50)"/>
+			<column name="start_time" type="TIME"/>
+			<column name="end_time" type="TIME"/>
+			<column name="comment" type="VARCHAR(255)"/>
 			<column name="min_per_task" type="INTEGER"/>
         </createTable>
 	</changeSet>-->
-</databaseChangeLog>
+	
+	<!--<changeSet id="5" author="ahuszar">
+		<addForeignKeyConstraint baseColumnNames="work_month_id"
+            baseTableName="work_day"
+            constraintName="fk_work_month_id"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="CASCADE"
+            onUpdate="RESTRICT"
+            referencedColumnNames="id"
+            referencedTableName="work_month"/>
+	</changeSet>
+	
+	<changeSet id="6" author="ahuszar">
+		<addForeignKeyConstraint baseColumnNames="time_logger_id"
+            baseTableName="work_month"
+            constraintName="fk_time_logger_id"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="CASCADE"
+            onUpdate="RESTRICT"
+            referencedColumnNames="id"
+            referencedTableName="time_logger"/>
+	</changeSet>
+	
+	<changeSet id="7" author="ahuszar">
+		<addForeignKeyConstraint baseColumnNames="work_day_id"
+            baseTableName="task"
+            constraintName="fk_work_day_id"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="CASCADE"
+            onUpdate="RESTRICT"
+            referencedColumnNames="id"
+            referencedTableName="work_day"/>
+	</changeSet>-->

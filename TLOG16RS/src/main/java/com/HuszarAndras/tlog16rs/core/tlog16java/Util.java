@@ -16,6 +16,10 @@ import java.util.List;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import lombok.extern.slf4j.Slf4j;
+import com.HuszarAndras.tlog16rs.entities.TimeLogger;
+import com.HuszarAndras.tlog16rs.entities.WorkDay;
+import com.HuszarAndras.tlog16rs.entities.WorkMonth;
+import com.HuszarAndras.tlog16rs.entities.Task;
 
 /**
  * 

@@ -13,10 +13,9 @@ import javax.persistence.Entity;
  */
 @lombok.Getter
 @lombok.Setter
-@Entity
 public class TestEntity {
     private String text;
-    private static int id;
+    private int id;
     
     public TestEntity(){
         id++;

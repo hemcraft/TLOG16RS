@@ -13,17 +13,18 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewMonthException
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotTheSameMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledException;
+import com.HuszarAndras.tlog16rs.core.tlog16java.Counter;
 import com.HuszarAndras.tlog16rs.core.tlog16java.DeleteTaskRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.FinishingTaskRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.ModifyTaskRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.Service;
 import com.HuszarAndras.tlog16rs.core.tlog16java.StartTaskRB;
-import com.HuszarAndras.tlog16rs.core.tlog16java.TimeLogger;
-import com.HuszarAndras.tlog16rs.core.tlog16java.Task;
+import com.HuszarAndras.tlog16rs.entities.TimeLogger;
+import com.HuszarAndras.tlog16rs.entities.Task;
 import com.HuszarAndras.tlog16rs.core.tlog16java.Util;
-import com.HuszarAndras.tlog16rs.core.tlog16java.WorkDay;
+import com.HuszarAndras.tlog16rs.entities.WorkDay;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkDayRB;
-import com.HuszarAndras.tlog16rs.core.tlog16java.WorkMonth;
+import com.HuszarAndras.tlog16rs.entities.WorkMonth;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkMonthRB;
 import com.avaje.ebean.Ebean;
 import java.time.LocalDate;
@@ -41,17 +42,29 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/timelogger")
 public class TLOG16RSResource {
+    private TimeLogger timeLogger;
+    private boolean inUse;
 
-    private TimeLogger timeLogger = new TimeLogger();
+    public TLOG16RSResource(){
+        timeLogger = new TimeLogger();
+        inUse = false;
+    }
+    
+    @POST
+    @Path("/init")
+    public void initStart(){
+        Ebean.save(timeLogger);
+    }
     
     //1
     @GET
     @Path("/workmonths")
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<WorkMonth> getMonths() throws EmptyTimeFieldException {
+        TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);
         ArrayList<WorkMonth> answer = new ArrayList<WorkMonth>();
-        for(int i = 0; i < timeLogger.getSize(); i++){
-            answer.add(timeLogger.getWorkMonth(i));
+        for(int i = 0; i < timeLoggerTemp.getSize(); i++){
+            answer.add(timeLoggerTemp.getWorkMonth(i));
         }
         return answer;
     }
@@ -62,9 +75,12 @@ public class TLOG16RSResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public WorkMonth addNewWorkMonth(WorkMonthRB month) throws NotNewMonthException{
+        
         WorkMonth workMonth = new WorkMonth(month.getYear(), month.getMonth());
         timeLogger.addMonth(workMonth);
         Ebean.save(timeLogger);
+        
+        inUse = false;
         
         return workMonth;
     }
@@ -82,6 +98,9 @@ public class TLOG16RSResource {
         
         WorkDay workDay = new WorkDay(day.getRequiredHours(), LocalDate.of(day.getYear(), day.getMonth(), day.getDay()));
         timeLogger.getWorkMonth(monthIndex).addWorkDay(workDay, true);
+        Ebean.save(timeLogger);
+        inUse = false;
+        
         return workDay;
     }
     
@@ -102,6 +121,8 @@ public class TLOG16RSResource {
         
         Task t = new Task(task.getTaskId(), task.getStartTime(), task.getStartTime(), task.getComment());     
         timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).addTask(t);
+        Ebean.save(timeLogger);
+        inUse = false;
         
         return t;
     }
@@ -116,11 +137,15 @@ public class TLOG16RSResource {
         int counter = 0;
         
         monthIndex = Service.findOrCreateMonth(timeLogger, monthIndex, year, month);
+        Ebean.save(timeLogger);
+        TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);
         
-        for(int j = 0; j < timeLogger.getWorkMonth(monthIndex).getDayList().size(); j++){
-            WorkDay wd = timeLogger.getWorkMonth(monthIndex).getDays(j);
+        for(int j = 0; j < timeLoggerTemp.getWorkMonth(monthIndex).getDayList().size(); j++){
+            WorkDay wd = timeLoggerTemp.getWorkMonth(monthIndex).getDays(j);
             answer.add(wd);
         }
+        inUse = false;
+        
         return answer;
     }
         
@@ -128,7 +153,7 @@ public class TLOG16RSResource {
     @GET
     @Path("/workmonths/{year}/{month}/{day}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<Task> listTasks(@PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "day") int day) throws EmptyTimeFieldException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, FutureWorkException, NotNewMonthException {
+    public ArrayList<Task> listTasks(@PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "day") int day) throws EmptyTimeFieldException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, FutureWorkException, NotNewMonthException {    
         ArrayList<Task> answer = new ArrayList<Task>();
         
         int monthIndex = 0;
@@ -137,11 +162,16 @@ public class TLOG16RSResource {
         monthIndex = Service.findOrCreateMonth(timeLogger, monthIndex, year, month);
         
         dayIndex = Service.findOrCreateDay(timeLogger, monthIndex, dayIndex, year, month, day);
+        
+        Ebean.save(timeLogger);
+        
+        TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);
               
-        for(int i = 0; i < timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).getTaskList().size(); i++){
-            Task t = timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).getTasks(i);
+        for(int i = 0; i < timeLoggerTemp.getWorkMonth(monthIndex).getDays(dayIndex).getTaskList().size(); i++){
+            Task t = timeLoggerTemp.getWorkMonth(monthIndex).getDays(dayIndex).getTasks(i);
             answer.add(t);
         }
+        inUse = false;
         
         return answer;
     }
@@ -172,6 +202,9 @@ public class TLOG16RSResource {
             Task t = new Task(task.getTaskId(), task.getStartTime(), task.getEndTime(), "");
             timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).addTask(t);
         }
+        inUse = false;
+        
+        Ebean.save(timeLogger);
     }
     
     
@@ -204,6 +237,9 @@ public class TLOG16RSResource {
             Task t = new Task(task.getNewTaskId(), task.getNewStartTime(), task.getNewEndTime(), task.getNewComment());
             timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).addTask(t);
         }
+        inUse = false;
+        
+        Ebean.save(timeLogger);
     }
     
     //9
@@ -234,12 +270,27 @@ public class TLOG16RSResource {
                     timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).deleteTaskAt(i);
             }
         }
+        inUse = false;
+        
+        Ebean.save(timeLogger);
     }
     
     @PUT
     @Path("/workmonths/deleteall")
     public void deleteAll(){
         timeLogger.deleteMonths();
+        TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);
+        for(int i = 0; i < timeLoggerTemp.getSize(); i++){
+            for(int j = 0; j < timeLoggerTemp.getWorkMonth(i).getDayList().size(); j++){
+                for(int z = 0; z < timeLoggerTemp.getWorkMonth(i).getDays(j).getTaskList().size(); z++){
+                    Ebean.delete(timeLoggerTemp.getWorkMonth(i).getDays(j).getTasks(z));
+                }
+                Ebean.delete(timeLoggerTemp.getWorkMonth(i).getDays(j));
+            }
+            Ebean.delete(timeLoggerTemp.getWorkMonth(i));
+        }
+        Ebean.delete(timeLoggerTemp);
+       
     }
     
     @POST
@@ -249,7 +300,7 @@ public class TLOG16RSResource {
     public String testSave(String text){
         TestEntity testEntity = new TestEntity();
         testEntity.setText(text);
-        Ebean.save(testEntity);
+        //Ebean.save(testEntity);
         return text;
     }
 }
