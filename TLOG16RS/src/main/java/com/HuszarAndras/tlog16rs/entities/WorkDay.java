@@ -40,9 +40,9 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "work_day")
 public class WorkDay {
     @Id
-    @Column(name = "id")
+    @Column(name = "id") @GeneratedValue
     private int id;
-    private static transient AtomicInteger uniqueId=new AtomicInteger();
+    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<Task> tasks;
@@ -54,7 +54,7 @@ public class WorkDay {
     private long sumPerDay;
     
     public WorkDay(long requiredMinPerDay, LocalDate actualDay) throws NegativeMinutesOfWorkException, FutureWorkException{
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         if(requiredMinPerDay < 0){
             log.error("requiredMinPerDay cannot be less then zero");
             throw new NegativeMinutesOfWorkException("can't be negative");
@@ -69,7 +69,7 @@ public class WorkDay {
     }
     
     public WorkDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException{
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         if(requiredMinPerDay < 0){
             log.error("requiredMinPerDay cannot be less then zero");
             throw new NegativeMinutesOfWorkException("can't be negative");
@@ -80,7 +80,7 @@ public class WorkDay {
     }
     
     public WorkDay(){
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         this.requiredMinPerDay = 450;
         this.actualDay = LocalDate.now();
         tasks = new ArrayList<>();

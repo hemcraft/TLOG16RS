@@ -41,9 +41,9 @@ import org.apache.commons.lang3.StringUtils;
 @Table(name = "work_month")
 public class WorkMonth {
     @Id
-    @Column(name = "id")
+    @Column(name = "id") @GeneratedValue
     private int id;
-    private static transient AtomicInteger uniqueId=new AtomicInteger();
+    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<WorkDay> days;
@@ -59,14 +59,14 @@ public class WorkMonth {
         this.date = YearMonth.of(year, month);
         days = new ArrayList<>();
         newDate = date.toString();
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
     }
     
     public WorkMonth(int year, Month month){
         this.date = YearMonth.of(year, month);
         days = new ArrayList<>();
         newDate = date.toString();
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
     }
     
     /**

@@ -32,9 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "task")
 public class Task {
     @Id
-    @Column(name = "id")
+    @Column(name = "id") @GeneratedValue
     private int id;
-    private static transient AtomicInteger uniqueId=new AtomicInteger();
+    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @Column(name = "task_id")
     private String taskId;
@@ -42,11 +42,11 @@ public class Task {
     private LocalTime startTime;
     @Column(name = "end_time")
     private LocalTime endTime;
-    @Column(name = "min_per_task")
+    @Column(name = "comment")
     private String comment;
     
     public Task(String taskId, int startHour, int startMin, int endHour, int endMin, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -69,7 +69,7 @@ public class Task {
     }
     
     public Task(String taskId, String startTime, String endTime, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -92,7 +92,7 @@ public class Task {
     }
     
     public Task(String taskId) throws InvalidTaskIdException, NoTaskIdException{
-        id = uniqueId.getAndIncrement();
+        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");

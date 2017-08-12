@@ -29,6 +29,7 @@ import com.HuszarAndras.tlog16rs.entities.TimeLogger;
 import com.HuszarAndras.tlog16rs.entities.WorkDay;
 import com.HuszarAndras.tlog16rs.entities.WorkMonth;
 import com.HuszarAndras.tlog16rs.entities.Task;
+import liquibase.resource.ClassLoaderResourceAccessor;
 
 /**
  *
@@ -76,7 +77,7 @@ public class CreateDatabase {
         
         try{
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(c));
-        liquibase = new Liquibase("C:/Users/andris/Documents/NetBeansProjects/TLOG16RS/src/main/resources/migration.xml", new FileSystemResourceAccessor(), database);
+        liquibase = new Liquibase("migration.xml", new ClassLoaderResourceAccessor(), database);
         liquibase.update("");
         }catch(LiquibaseException e){
             

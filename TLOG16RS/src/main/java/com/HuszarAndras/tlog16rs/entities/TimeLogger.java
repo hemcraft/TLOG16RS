@@ -40,16 +40,16 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "time_logger")
 public class TimeLogger {
     @Id
-    @Column(name = "id")
+    @Column(name = "id") @GeneratedValue
     private int id;
-    private static transient AtomicInteger uniqueId=new AtomicInteger();
+    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<WorkMonth> months;
     
     public TimeLogger() {
         months = new ArrayList<>();
-        id = 1;
+        //id = 1;
     }
     
     public WorkMonth getWorkMonth(int i){
