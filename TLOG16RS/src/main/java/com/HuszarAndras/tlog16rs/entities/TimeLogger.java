@@ -43,12 +43,15 @@ public class TimeLogger {
     @Column(name = "id") @GeneratedValue
     private int id;
     //private static transient AtomicInteger uniqueId=new AtomicInteger();
+    @Column(name = "name")
+    private String name;
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<WorkMonth> months;
     
     public TimeLogger() {
         months = new ArrayList<>();
+        name = "tablazat";
         //id = 1;
     }
     

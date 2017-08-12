@@ -76,4 +76,10 @@
             referencedColumnNames="id"
             referencedTableName="work_day"/>
 	</changeSet>
+	
+	<changeSet author="ahuszar" id="8">
+		<addColumn tableName="time_logger">
+			<column name="name" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
