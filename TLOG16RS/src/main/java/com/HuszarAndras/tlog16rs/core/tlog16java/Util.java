@@ -5,20 +5,13 @@
  */
 package com.HuszarAndras.tlog16rs.core.tlog16java;
 
-import static java.lang.Math.abs;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import lombok.Getter;
-import lombok.Setter;
 import java.util.List;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import lombok.extern.slf4j.Slf4j;
-import com.HuszarAndras.tlog16rs.entities.TimeLogger;
-import com.HuszarAndras.tlog16rs.entities.WorkDay;
-import com.HuszarAndras.tlog16rs.entities.WorkMonth;
 import com.HuszarAndras.tlog16rs.entities.Task;
 
 /**

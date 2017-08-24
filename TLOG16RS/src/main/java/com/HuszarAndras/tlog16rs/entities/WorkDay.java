@@ -8,21 +8,17 @@ package com.HuszarAndras.tlog16rs.entities;
 import com.HuszarAndras.tlog16rs.core.tlog16java.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.FutureWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NegativeMinutesOfWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
-import static com.HuszarAndras.tlog16rs.core.tlog16java.Util.isSeparatedTime;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -42,7 +38,6 @@ public class WorkDay {
     @Id
     @Column(name = "id") @GeneratedValue
     private int id;
-    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private List<Task> tasks;
@@ -52,6 +47,8 @@ public class WorkDay {
     private LocalDate actualDay = LocalDate.now();
     @Column(name = "sum_per_day")
     private long sumPerDay;
+    @Column(name = "extra_min_per_day")
+    private long extraMinPerDay;
     
     public WorkDay(long requiredMinPerDay, LocalDate actualDay) throws NegativeMinutesOfWorkException, FutureWorkException{
         //id = uniqueId.getAndIncrement();
@@ -130,7 +127,8 @@ public class WorkDay {
      * @throws EmptyTimeFieldException 
      */
     public long getExtraMinPerDay() throws EmptyTimeFieldException{
-        return (getSumPerDay() - requiredMinPerDay);
+        extraMinPerDay = (getSumPerDay() - requiredMinPerDay);
+        return extraMinPerDay;
     }
     
     /**
@@ -169,7 +167,6 @@ public class WorkDay {
     public void addTask(Task t) throws NotSeparatedTimesException{
         if(Util.isSeparatedTime(t, this.tasks)){
             tasks.add(t);
-            Counter.taskCounter++;
         }
         else{
             log.error("the added task is not separated from the other tasks");

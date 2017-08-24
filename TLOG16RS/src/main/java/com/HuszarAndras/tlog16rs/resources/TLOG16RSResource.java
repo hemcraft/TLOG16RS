@@ -13,7 +13,6 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewMonthException
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotTheSameMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledException;
-import com.HuszarAndras.tlog16rs.core.tlog16java.Counter;
 import com.HuszarAndras.tlog16rs.core.tlog16java.DeleteTaskRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.FinishingTaskRB;
 import com.HuszarAndras.tlog16rs.core.tlog16java.ModifyTaskRB;
@@ -21,7 +20,6 @@ import com.HuszarAndras.tlog16rs.core.tlog16java.Service;
 import com.HuszarAndras.tlog16rs.core.tlog16java.StartTaskRB;
 import com.HuszarAndras.tlog16rs.entities.TimeLogger;
 import com.HuszarAndras.tlog16rs.entities.Task;
-import com.HuszarAndras.tlog16rs.core.tlog16java.Util;
 import com.HuszarAndras.tlog16rs.entities.WorkDay;
 import com.HuszarAndras.tlog16rs.core.tlog16java.WorkDayRB;
 import com.HuszarAndras.tlog16rs.entities.WorkMonth;
@@ -33,13 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import static javax.ws.rs.HttpMethod.POST;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/timelogger")
 public class TLOG16RSResource {
@@ -107,6 +106,17 @@ public class TLOG16RSResource {
         Ebean.save(timeLogger);
         
         return workDay;
+    }
+    
+    @OPTIONS
+    @Path("/workmonths/workdays")
+    @Produces(MediaType.TEXT_PLAIN+ ";charset=utf-8")
+    public Response checkOptions(){
+        return Response.status(200)
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "Content-Type")
+        .header("Access-Control-Allow-Methods", "POST, OPTIONS") //CAN BE ENHANCED WITH OTHER HTTP CALL METHODS 
+        .build();
     }
     
     //4
@@ -312,5 +322,27 @@ public class TLOG16RSResource {
                 Ebean.delete(timeLoggerTemp);
             }
         }
+    }
+    
+    @POST
+    @Path("/workmonths/updateStatistics")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String update(WorkDayRB day) throws EmptyTimeFieldException{
+        String stats = timeLogger.updateMonthlyStatistics(day.getYear(), day.getMonth(), day.getDay());
+        
+        Ebean.save(timeLogger);
+        return stats;
+    }
+    
+    @OPTIONS
+    @Path("/workmonths/updateStatistics")
+    @Produces(MediaType.TEXT_PLAIN+ ";charset=utf-8")
+    public Response checkOption(){
+        return Response.status(200)
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "Content-Type")
+        .header("Access-Control-Allow-Methods", "POST, OPTIONS") //CAN BE ENHANCED WITH OTHER HTTP CALL METHODS 
+        .build();
     }
 }

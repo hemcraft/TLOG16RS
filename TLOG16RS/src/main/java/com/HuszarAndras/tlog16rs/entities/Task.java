@@ -12,11 +12,9 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.InvalidTaskIdExcepti
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NoTaskIdException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import static com.HuszarAndras.tlog16rs.core.tlog16java.Util.roundToMultipleQuarterHour;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +32,6 @@ public class Task {
     @Id
     @Column(name = "id") @GeneratedValue
     private int id;
-    //private static transient AtomicInteger uniqueId=new AtomicInteger();
     
     @Column(name = "task_id")
     private String taskId;
@@ -46,7 +43,6 @@ public class Task {
     private String comment;
     
     public Task(String taskId, int startHour, int startMin, int endHour, int endMin, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
-        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -69,7 +65,6 @@ public class Task {
     }
     
     public Task(String taskId, String startTime, String endTime, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException{
-        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");
@@ -92,7 +87,6 @@ public class Task {
     }
     
     public Task(String taskId) throws InvalidTaskIdException, NoTaskIdException{
-        //id = uniqueId.getAndIncrement();
         this.taskId = taskId;
         if(taskId == ""){
             log.error("taskId cannot be empty");

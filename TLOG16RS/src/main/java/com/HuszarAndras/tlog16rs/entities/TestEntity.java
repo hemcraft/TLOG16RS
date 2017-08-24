@@ -5,7 +5,6 @@
  */
 package com.HuszarAndras.tlog16rs.entities;
 
-import javax.persistence.Entity;
 
 /**
  *

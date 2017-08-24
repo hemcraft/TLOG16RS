@@ -7,8 +7,6 @@ package com.HuszarAndras.tlog16rs.core.tlog16java;
 
 import java.time.LocalDate;
 import java.util.Scanner;
-import lombok.Getter;
-import lombok.Setter;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.FutureWorkException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.InvalidTaskIdException;
@@ -23,12 +21,13 @@ import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledExc
 import com.HuszarAndras.tlog16rs.entities.TimeLogger;
 import com.HuszarAndras.tlog16rs.entities.WorkDay;
 import com.HuszarAndras.tlog16rs.entities.WorkMonth;
-import com.HuszarAndras.tlog16rs.entities.Task;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Andris
  */
+@Slf4j
 public class TimeLoggerUI {
 
     /**
@@ -68,10 +67,12 @@ public class TimeLoggerUI {
         
         Scanner sc = new Scanner(System.in);
         int i = 0;
-        while(true){
+        boolean running = true;
+        while(running){
             i = sc.nextInt();
             switch(i) {
                 case 0 : {
+                    running = false;
                     System.exit(0);
                     break;
                 }
@@ -136,6 +137,7 @@ public class TimeLoggerUI {
                     try{
                     timeLogger.addTask(whichMonth, whichDay, taskId, comment, startTime);
                     }catch(EmptyTimeFieldException e){
+                        log.error("error case 6");
                         e.printStackTrace();
                     }
                     break;
@@ -157,6 +159,7 @@ public class TimeLoggerUI {
                     try{
                         timeLogger.finishTask(whichMonth, whichDay, whichTask, endTime);
                     }catch(NotExpectedTimeOrderException e){
+                        log.error("error case 7");
                         e.printStackTrace();
                     }
                     break;
@@ -171,13 +174,9 @@ public class TimeLoggerUI {
                     timeLogger.listTasks(whichMonth, whichDay);
                     int whichTask = sc.nextInt();
                     sc.nextLine();
-                    System.out.println("Are you sure? y/n");
-                    String answer = sc.nextLine();
-                   // if(answer == "y")
-                    //{
-                       // System.out.println("igen");
+                    System.out.println("Are you sure? y/n");               
                         timeLogger.deleteTask(whichMonth, whichDay, whichTask);
-                    //}
+                   
                     break;
                 }
                 case 9 : {

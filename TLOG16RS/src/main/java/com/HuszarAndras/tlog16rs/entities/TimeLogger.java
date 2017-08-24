@@ -5,27 +5,20 @@
  */
 package com.HuszarAndras.tlog16rs.entities;
 
-import com.HuszarAndras.tlog16rs.core.tlog16java.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import lombok.Getter;
-import lombok.Setter;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.InvalidTaskIdException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NoTaskIdException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotNewMonthException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotSeparatedTimesException;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -90,7 +83,6 @@ public class TimeLogger {
     public void addMonth(WorkMonth wm) throws NotNewMonthException{
         if(isNewMonth(wm)){
             months.add(wm);
-            Counter.monthCounter++;
         }
         else{
             log.error("this month is alreardy in the calendar");
@@ -220,4 +212,26 @@ public class TimeLogger {
     public void deleteMonths() {
         months.clear();
     }
+    
+    public String updateMonthlyStatistics(int year, int month, int day) throws EmptyTimeFieldException{
+        String stats = "";
+        for(int i = 0; i < months.size(); i++){
+            if(year == months.get(i).getYear()){
+                if(month == months.get(i).getMonthValue()){
+                    stats = Long.toString(months.get(i).getRequiredMinPerMonth());
+                    stats = stats + " ";
+                    stats = stats + Long.toString(months.get(i).getSumPerMonth());
+                    stats = stats + " ";
+                    months.get(i).getExtraMinPerMonth();
+                    for(int j = 0; j < months.get(i).getDayList().size(); j++){
+                        if(months.get(i).getDays(j).getActualDay().getDayOfMonth() == day){
+                            stats = stats + Long.toString(months.get(i).getDays(j).getExtraMinPerDay());
+                        }
+                    }
+                }
+            }
+        }
+        return stats;
+    }
+
 }
