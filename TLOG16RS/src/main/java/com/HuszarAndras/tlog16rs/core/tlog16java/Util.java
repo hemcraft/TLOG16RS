@@ -11,6 +11,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import java.util.List;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.EmptyTimeFieldException;
 import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.NotExpectedTimeOrderException;
+import com.HuszarAndras.tlog16rs.core.timelogger.exceptions.WeekendNotEnabledException;
 import lombok.extern.slf4j.Slf4j;
 import com.HuszarAndras.tlog16rs.entities.Task;
 
@@ -50,8 +51,11 @@ public class Util {
      * @param actualDay
      * @return return true or false
      */
-    public static boolean isWeekDay(LocalDate actualDay){        
-        return (actualDay.getDayOfWeek().getValue() < 6);
+    public static boolean isWeekDay(LocalDate actualDay) throws WeekendNotEnabledException{    
+        if((actualDay.getDayOfWeek().getValue() < 6))
+            return true;
+        else
+            throw new WeekendNotEnabledException("day is on weekend");
     }
     
     /*

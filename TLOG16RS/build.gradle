@@ -1,6 +1,10 @@
+import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.container.*
+
 plugins {
     id 'org.sonarqube' version '2.5'
     id 'pl.allegro.tech.build.axion-release' version '1.4.0'
+    id "com.bmuschko.docker-java-application" version "2.6.6"
 }
 
 apply plugin: 'java'
@@ -19,6 +23,10 @@ project.ext {
     dropwizardVersion = '1.1.0'   
 }
 
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'com.HuszarAndras.tlog16rs.TLOG16RSApplication'
+}
+
 
 mainClassName = "com.HuszarAndras.tlog16rs.TLOG16RSApplication"
 
@@ -35,7 +43,8 @@ dependencies {
     compile group: 'org.avaje.ebeanorm', name: 'avaje-ebeanorm', version: '7.1.1'
     compile group: 'org.avaje.ebeanorm', name: 'avaje-ebeanorm-agent', version: '4.9.1'
     compile 'org.liquibase:liquibase-core:3.3.5'
-
+    compile 'com.bmuschko:gradle-docker-plugin:2.6.6'
+    runtime 'com.bmuschko:gradle-docker-plugin:2.6.6'
         
 }
 
@@ -55,4 +64,41 @@ classes.doLast {
         ]
     }
 }
+
+docker {
+    url = "unix:///var/run/docker.sock";
+}
+
+task createDockerfile(type: Dockerfile) {   
+    doFirst {
+        copy {
+            from "src/dist"
+            into "build/dist"
+        }
+    }
+
+    dependsOn = [':distTar']
+    destFile = project.file('build/Dockerfile')
+    from "frolvlad/alpine-oraclejdk8:slim"
+    maintainer 'Andras Gazdag "agazdag@precognox.com"'
+
+    def appFolder = "/"
+
+    runCommand "apk --update add curl tar bash wget openssl"
+    runCommand "wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz"
+    runCommand "tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.2.0.tar.gz"
+
+    addFile "distributions/${project.distTar.archiveName}", "/tmp"
+    runCommand "mv /tmp/${project.applicationName}-${project.version} /${project.applicationName}"
+    workingDir  "${appFolder}"
+
+    defaultCommand  'bash', '-c', 'dockerize -wait ${DB_URL/jdbc:mariadb/tcp}' + " -template /${rootProject.name}/config.yml.template:/${rootProject.name}/config.yml /${project.applicationName}/bin/${project.applicationName}   server ${project.applicationName}/config.yml"
+}
+
+dockerBuildImage {
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tag = "polc/${project.name.toLowerCase()}"
+}
+
 
