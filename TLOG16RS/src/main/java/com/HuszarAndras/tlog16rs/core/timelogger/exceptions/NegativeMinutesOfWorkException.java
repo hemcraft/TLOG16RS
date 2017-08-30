@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NegativeMinutesOfWorkException extends Exception{
     public NegativeMinutesOfWorkException(String message){
         super(message);
+        //405
     }
 }

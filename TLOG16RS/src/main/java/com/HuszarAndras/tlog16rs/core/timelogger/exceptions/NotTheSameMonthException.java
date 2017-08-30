@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NotTheSameMonthException extends Exception{
     public NotTheSameMonthException(String message){
         super(message);
+        //412
     }
 }

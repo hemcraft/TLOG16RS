@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class WeekendNotEnabledException extends Exception{
     public WeekendNotEnabledException(String message){
         super(message);
+        //406
     }
 }

@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NotSeparatedTimesException extends Exception{
     public NotSeparatedTimesException(String message){
         super(message);
+        //417
     }
 }

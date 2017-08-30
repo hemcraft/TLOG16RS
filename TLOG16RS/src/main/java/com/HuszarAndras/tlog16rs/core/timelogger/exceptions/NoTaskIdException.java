@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NoTaskIdException extends Exception{
     public NoTaskIdException(String message){
         super(message);
+        //422
     }
 }

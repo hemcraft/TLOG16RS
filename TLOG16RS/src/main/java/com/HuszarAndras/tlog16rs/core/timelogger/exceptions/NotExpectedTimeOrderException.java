@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NotExpectedTimeOrderException extends Exception{
     public NotExpectedTimeOrderException(String message) {
         super(message);
+        //417
     }
 }

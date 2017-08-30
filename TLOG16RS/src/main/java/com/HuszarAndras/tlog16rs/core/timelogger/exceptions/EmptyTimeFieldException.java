@@ -12,6 +12,7 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class EmptyTimeFieldException extends Exception{
     public EmptyTimeFieldException(String message){
         super(message);
+        //411
     }
 
     public EmptyTimeFieldException() {

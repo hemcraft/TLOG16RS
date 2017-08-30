@@ -75,7 +75,12 @@ public class Task {
             throw new InvalidTaskIdException("wrong format");
         }
         this.comment = comment;
+        if(startTime == ""){
+            throw new EmptyTimeFieldException("cannot be empty");
+        }
+     
         this.startTime = LocalTime.parse(startTime);
+        
         if(this.getStartTime().isAfter(LocalTime.parse(endTime))){
             log.error("startTime cannot be after endTime");
             throw new NotExpectedTimeOrderException("endTime before startTime");

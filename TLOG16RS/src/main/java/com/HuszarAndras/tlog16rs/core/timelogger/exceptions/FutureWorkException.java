@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class FutureWorkException extends Exception{
     public FutureWorkException(String message){
         super(message);
+        //403
     }
 }

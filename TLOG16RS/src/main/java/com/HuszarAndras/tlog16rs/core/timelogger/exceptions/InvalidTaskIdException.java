@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class InvalidTaskIdException extends Exception{
     public InvalidTaskIdException(String message){
         super(message);
+        //415
     }
 }

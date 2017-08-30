@@ -54,25 +54,17 @@ public class TLOG16RSResource {
         }
     }
     
-    @POST
-    @Path("/init")
-    public void initStart(){
-        timeLogger = new TimeLogger();
-        Ebean.save(timeLogger);
-    }
-    
     //1
     @GET
     @Path("/workmonths")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<WorkMonth> getMonths() throws EmptyTimeFieldException {
-        //TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);
-        //timeloggert át kell írni
+    public Response getMonths() {
+        TimeLogger timeLoggerTemp = Ebean.find(TimeLogger.class, 1);        
         ArrayList<WorkMonth> answer = new ArrayList<WorkMonth>();
-        for(int i = 0; i < timeLogger.getSize(); i++){
-            answer.add(timeLogger.getWorkMonth(i));
+        for(int i = 0; i < timeLoggerTemp.getSize(); i++){
+            answer.add(timeLoggerTemp.getWorkMonth(i));
         }
-        return answer;
+        return Response.status(200).entity(answer).build();
     }
     
     //2
@@ -80,15 +72,19 @@ public class TLOG16RSResource {
     @Path("/workmonths")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public WorkMonth addNewWorkMonth(WorkMonthRB month) throws NotNewMonthException{
-        
+    public Response addNewWorkMonth(WorkMonthRB month) throws NotNewMonthException{
+        try{
         WorkMonth workMonth = new WorkMonth(month.getYear(), month.getMonth());
         timeLogger.addMonth(workMonth);
         
         Ebean.save(timeLogger);
         
         
-        return workMonth;
+        return Response.status(200).build();
+        
+        }catch(NotNewMonthException e){
+            return Response.status(409).build(); 
+        }
     }
     
     //3
@@ -96,7 +92,8 @@ public class TLOG16RSResource {
     @Path("/workmonths/workdays")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public WorkDay addNewWorkDay(WorkDayRB day) throws NotNewMonthException, NegativeMinutesOfWorkException, FutureWorkException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException{
+    public Response addNewWorkDay(WorkDayRB day) throws NotNewMonthException, NegativeMinutesOfWorkException, FutureWorkException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException{
+        try{
         int monthIndex = 0;
         int counter = 0;
         
@@ -106,7 +103,17 @@ public class TLOG16RSResource {
         timeLogger.getWorkMonth(monthIndex).addWorkDay(workDay, true);
         Ebean.save(timeLogger);
         
-        return workDay;
+        return Response.status(200).build();
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(NegativeMinutesOfWorkException e){
+            return Response.status(405).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
+        }
     }
     
     //3.5
@@ -128,6 +135,15 @@ public class TLOG16RSResource {
         
         }catch(WeekendNotEnabledException e){
             return Response.status(406).build();
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(NegativeMinutesOfWorkException e){
+            return Response.status(405).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
         }
     }
     
@@ -136,7 +152,8 @@ public class TLOG16RSResource {
     @Path("/workmonths/workdays/tasks/start")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Task addNewTask(StartTaskRB task) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException, NotNewMonthException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotSeparatedTimesException, FutureWorkException{
+    public Response addNewTask(StartTaskRB task) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException, NotNewMonthException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotSeparatedTimesException, FutureWorkException{
+        try{
         int monthIndex = 0;
         int dayIndex = 0;
         int counter = 0;
@@ -150,14 +167,35 @@ public class TLOG16RSResource {
         timeLogger.getWorkMonth(monthIndex).getDays(dayIndex).addTask(t);
         Ebean.save(timeLogger);
         
-        return t;
+        return Response.status(200).build();
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
+        }catch(NotExpectedTimeOrderException e){
+            return Response.status(417).build();
+        }
+        catch(InvalidTaskIdException e){
+            return Response.status(415).build();
+        }catch(NoTaskIdException e){
+            return Response.status(422).build();
+        }
+        catch(EmptyTimeFieldException e){
+            return Response.status(411).build();
+        }catch(NotSeparatedTimesException e){
+            return Response.status(417).build();
+        }
     }
     
     //5
     @GET
     @Path("/workmonths/{year}/{month}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<WorkDay> listDays(@PathParam(value = "year") int year, @PathParam(value = "month") int month) throws EmptyTimeFieldException, NotNewMonthException {
+    public Response listDays(@PathParam(value = "year") int year, @PathParam(value = "month") int month) throws NotNewMonthException {
+        try{
         ArrayList<WorkDay> answer = new ArrayList<WorkDay>();
         int monthIndex = 0;
         int counter = 0;
@@ -169,16 +207,21 @@ public class TLOG16RSResource {
             answer.add(wd);
         }
         
-        Ebean.save(timeLogger);
+        Ebean.save(timeLogger);     
+        return Response.status(200).entity(answer).build();
+        //return Response.ok(answer).build();
         
-        return answer;
+        }catch(NotNewMonthException e){
+            return Response.status(409).build();
+        }
     }
         
     //6
     @GET
     @Path("/workmonths/{year}/{month}/{day}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<Task> listTasks(@PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "day") int day) throws EmptyTimeFieldException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, FutureWorkException, NotNewMonthException {    
+    public Response listTasks(@PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "day") int day) throws WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, FutureWorkException, NotNewMonthException {    
+        try{
         ArrayList<Task> answer = new ArrayList<Task>();
         
         int monthIndex = 0;
@@ -195,14 +238,23 @@ public class TLOG16RSResource {
         
         Ebean.save(timeLogger);
         
-        return answer;
+        return Response.status(200).entity(answer).build();
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
+        }      
     }
     
     //7
     @PUT
     @Path("/workmonths/workdays/tasks/finish")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void finishTask(FinishingTaskRB task) throws NotNewMonthException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotExpectedTimeOrderException, EmptyTimeFieldException, NotSeparatedTimesException, FutureWorkException, InvalidTaskIdException, NoTaskIdException{
+    public Response finishTask(FinishingTaskRB task) throws NotNewMonthException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotExpectedTimeOrderException, EmptyTimeFieldException, NotSeparatedTimesException, FutureWorkException, InvalidTaskIdException, NoTaskIdException{
+        try{
         int monthIndex = 0;
         int dayIndex = 0;
         int counter = 0;
@@ -226,6 +278,26 @@ public class TLOG16RSResource {
         }
 
         Ebean.save(timeLogger);
+        return Response.status(200).build();
+        
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
+        }catch(NotExpectedTimeOrderException | NotSeparatedTimesException e){
+            return Response.status(417).build();
+        }
+        catch(InvalidTaskIdException e){
+            return Response.status(415).build();
+        }catch(NoTaskIdException e){
+            return Response.status(422).build();
+        }
+        catch(EmptyTimeFieldException e){
+            return Response.status(411).build();
+        }
     }
     
     
@@ -233,7 +305,8 @@ public class TLOG16RSResource {
     @PUT
     @Path("/workmonths/workdays/tasks/modify")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void modifyTask(ModifyTaskRB task) throws WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotNewMonthException, NotExpectedTimeOrderException, EmptyTimeFieldException, InvalidTaskIdException, NoTaskIdException, NotSeparatedTimesException, FutureWorkException{
+    public Response modifyTask(ModifyTaskRB task) throws WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException, NotNewMonthException, NotExpectedTimeOrderException, EmptyTimeFieldException, InvalidTaskIdException, NoTaskIdException, NotSeparatedTimesException, FutureWorkException{
+        try{
         int monthIndex = 0;
         int dayIndex = 0;
         int counter = 0;
@@ -260,13 +333,33 @@ public class TLOG16RSResource {
         }
         
         Ebean.save(timeLogger);
+        return Response.status(200).build();
+        
+        }catch(NotNewMonthException | NotNewDateException e){
+            return Response.status(409).build();
+        }catch(FutureWorkException e){
+            return Response.status(403).build();
+        }
+        catch(NotTheSameMonthException e){
+            return Response.status(412).build();
+        }catch(NotExpectedTimeOrderException | NotSeparatedTimesException e){
+            return Response.status(417).build();
+        }
+        catch(InvalidTaskIdException e){
+            return Response.status(415).build();
+        }catch(NoTaskIdException e){
+            return Response.status(422).build();
+        }
+        catch(EmptyTimeFieldException e){
+            return Response.status(411).build();
+        }
     }
     
     //9
     @PUT
     @Path("/workmonths/workdays/tasks/delete")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void deleteTask(DeleteTaskRB task) throws NotNewMonthException, WeekendNotEnabledException, NotNewDateException, NotTheSameMonthException{
+    public Response deleteTask(DeleteTaskRB task){
         int monthIndex = 0;
         int dayIndex = 0;
         int counter = 0;
@@ -294,17 +387,20 @@ public class TLOG16RSResource {
         }
         Ebean.delete(temporaryTask);
         Ebean.save(timeLogger);
+        return Response.status(200).build();
+           
     }
     
     @PUT
     @Path("/workmonths/deleteall")
-    public void deleteAll(){
+    public Response deleteAll(){
         timeLogger.deleteMonths();
         deleteDatabase();
+        return Response.status(200).build();
        
     }
     
-    @POST
+    /*@POST
     @Path("/timelogger/save/test")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
@@ -313,11 +409,11 @@ public class TLOG16RSResource {
         testEntity.setText(text);
         //Ebean.save(testEntity);
         return text;
-    }
+    }*/
     
     @PUT
     @Path("/workmonths/deleteDatabase")
-    public void deleteDatabase(){
+    public Response deleteDatabase(){
         List<TimeLogger> timeLoggerList = Ebean.find(TimeLogger.class).findList();
         if(!timeLoggerList.isEmpty()){
             for(int q = 0; q < timeLoggerList.size(); q++){
@@ -334,24 +430,32 @@ public class TLOG16RSResource {
                 Ebean.delete(timeLoggerTemp);
             }
         }
+        return Response.status(200).build();
     }
     
     @POST
     @Path("/workmonths/updateStatistics")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String update(WorkDayRB day) throws EmptyTimeFieldException{
+    public Response update(WorkDayRB day) throws EmptyTimeFieldException{
+        try{
         String stats = "valami";
         stats = timeLogger.updateMonthlyStatistics(day.getYear(), day.getMonth(), day.getDay());
         Ebean.save(timeLogger);
-        return stats;
+
+        return Response.status(200).entity(stats).build();
+        
+        }catch(EmptyTimeFieldException e){
+            return Response.status(411).build();
+        }
     }
     
     @POST
     @Path("/workmonths/updateDays")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String updateDays(WorkDayRB day) throws EmptyTimeFieldException{
+    public Response updateDays(WorkDayRB day) throws EmptyTimeFieldException{
+        try{
         String stats = "";
         for(int i = 1; i < 32; i++){
             String res = "";
@@ -360,6 +464,10 @@ public class TLOG16RSResource {
                 res = temp[2];
             stats = stats + " " + Integer.toString(i) + ":" + res;
         }
-        return stats;
+        return Response.status(200).entity(stats).build();
+        
+        }catch(EmptyTimeFieldException e){
+            return Response.status(411).build();
+        }
     }
 }

@@ -12,5 +12,6 @@ package com.HuszarAndras.tlog16rs.core.timelogger.exceptions;
 public class NotNewMonthException extends Exception{
     public NotNewMonthException(String message){
         super(message);
+        //409
     }
 }
